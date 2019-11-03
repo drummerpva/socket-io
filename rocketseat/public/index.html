@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Chat com Socket.io</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form class="chat">
+      <input type="text" name="username" placeholder="Digite seu usuário" />
+      <div class="messages"></div>
+      <input
+        type="text"
+        name="message"
+        placeholder="Digite sua mensagem"
+      /><br />
+      <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+      var socket = io("http://localhost:3000");
+
+      const renderMessage = message => {
+        $(".messages").append(
+          `<div class="message"><strong>${message.author}</strong>: ${
+            message.message
+          }</div>`
+        );
+      };
+
+      socket.on("previousMessages", messages => {
+        messages.map(msg => {
+          renderMessage(msg);
+        });
+      });
+
+      socket.on("receivedMessage", message => {
+        renderMessage(message);
+      });
+
+      $(".chat").on("submit", e => {
+        e.preventDefault();
+        var author = $("input[name=username").val();
+        var message = $("input[name=message").val();
+
+        if (author.length && message.length) {
+          var messageObject = {
+            author,
+            message
+          };
+          renderMessage(messageObject);
+          console.log(messageObject);
+          socket.emit("sendMessage", messageObject);
+        }
+      });
+    </script>
+  </body>
+</html>

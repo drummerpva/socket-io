@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Socket.io devPleno</title>
+  </head>
+  <body>
+    <h1>Socket.io</h1>
+
+    <div id="msgs"></div>
+    <input type="text" />
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script>
+      const socket = io();
+      socket.on("connect", () => {
+        $("#msgs").append("Connected with id: " + socket.id + "<br/>");
+        socket.emit("msg", "I am connected" + socket.id);
+      });
+      socket.on("msgm", msg => {
+        $("#msgs").append(msg + "<br/>");
+      });
+      $(function() {
+        $("input").on("keydown", e => {
+          if (e.keyCode === 13) {
+            let val = $("input").val();
+            socket.emit("msg", val);
+            $("#msgs").append(val + "<br/>");
+            $("input").val("");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
